@@ -34,7 +34,9 @@ app.post("/users", async (req, res) => {
             VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9)
             RETURNING *;
         `;
-        const values = [name, password, email, restaurantName, branchName, branchAddress, phoneNumber, id, country];
+
+        const hashedPassword = await bcrypt.hash(password, 10);
+        const values = [name, hashedPassword, email, restaurantName, branchName, branchAddress, phoneNumber, id, country];
         const result = await pool.query(query, values);
         res.status(201).json(result.rows[0]);
     } catch (error) {
