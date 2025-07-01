@@ -1,14 +1,14 @@
 const express = require('express');
 const cors = require('cors');
 const app = express();
-const port = 3000;
+const port = 8000;
 
 app.use(cors());
 app.use(express.json());
 
 require("dotenv").config();
 
-const databaseUrl = process.env.DATABASE_URL ;
+const databaseUrl = "postgresql://neondb_owner:npg_80neSdmGjoRi@ep-morning-base-a83jvhq1-pooler.eastus2.azure.neon.tech/neondb?sslmode=require&channel_binding=require" ;
 
 const {Pool} = require('pg');
 const pool = new Pool({
@@ -16,7 +16,7 @@ const pool = new Pool({
 });
 
 app.post("/users", async (req, res) => {
-    const {name, password, email, restaurentName, branchName, branchAddress, phoneNumber, id } = req.body;
+    const {name, password, email, restaurantName, branchName, branchAddress, phoneNumber, id, country } = req.body;
     try {
 
         const existingUserQuery = `
@@ -26,15 +26,15 @@ app.post("/users", async (req, res) => {
         if (existingUserResult.rows.length > 0) {
             return res.status(400).json({ error: "User with this email already exists" });
         }
-        if (!name || !password || !email || !restaurentName || !branchName || !branchAddress || !phoneNumber) {
+        if (!name || !password || !email || !restaurantName || !branchName || !branchAddress || !phoneNumber || !id || !country) {
             return res.status(400).json({ error: "All fields are required" });
         }
         const query = `
-            INSERT INTO users (name, password, email, restaurentName, branchName, branchAddress, phoneNumber, id)
-            VALUES ($1, $2, $3, $4, $5, $6, $7, $8)
+            INSERT INTO users (name, password, email, restaurantName, branchName, branchAddress, phoneNumber, id, country)
+            VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9)
             RETURNING *;
         `;
-        const values = [name, password, email, restaurentName, branchName, branchAddress, phoneNumber, id];
+        const values = [name, password, email, restaurantName, branchName, branchAddress, phoneNumber, id, country];
         const result = await pool.query(query, values);
         res.status(201).json(result.rows[0]);
     } catch (error) {
