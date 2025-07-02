@@ -3,6 +3,8 @@ const cors = require('cors');
 const app = express();
 const port = 8000;
 
+const bcrypt = require('bcrypt');
+
 app.use(cors());
 app.use(express.json());
 
@@ -16,7 +18,7 @@ const pool = new Pool({
 });
 
 app.post("/users", async (req, res) => {
-    const {name, password, email, restaurantName, branchName, branchAddress, phoneNumber, id, country } = req.body;
+    const {name, password, email, restaurentname, branchname, branchaddress, phonenumber, id, country } = req.body;
     try {
 
         const existingUserQuery = `
@@ -26,21 +28,22 @@ app.post("/users", async (req, res) => {
         if (existingUserResult.rows.length > 0) {
             return res.status(400).json({ error: "User with this email already exists" });
         }
-        if (!name || !password || !email || !restaurantName || !branchName || !branchAddress || !phoneNumber || !id || !country) {
+        if (!name || !password || !email || !restaurentname || !branchname || !branchaddress || !phonenumber || !id || !country) {
             return res.status(400).json({ error: "All fields are required" });
         }
+        console.log("one");
         const query = `
-            INSERT INTO users (name, password, email, restaurantName, branchName, branchAddress, phoneNumber, id, country)
+            INSERT INTO users (name, password, email, restaurentname, branchname, branchaddress, phonenumber, id, country)
             VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9)
             RETURNING *;
         `;
 
         const hashedPassword = await bcrypt.hash(password, 10);
-        const values = [name, hashedPassword, email, restaurantName, branchName, branchAddress, phoneNumber, id, country];
+        const values = [name, hashedPassword, email, restaurentname, branchname, branchaddress, phonenumber, id, country];
         const result = await pool.query(query, values);
         res.status(201).json(result.rows[0]);
     } catch (error) {
-        console.error("Error executing query", error);
+        console.error("Error executing query:", error.message);
         res.status(500).json({ error: "Internal Server Error" });
     }
 });

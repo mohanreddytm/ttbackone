@@ -8,9 +8,10 @@ Content-Type: application/json
   "name": "John Doe",
   "password": "password123",
   "email": "john.doe@example.com",
-  "restaurentName": "Doe's Diner",
-  "branchName": "Main Branch",
-  "branchAddress": "123 Main St",
-  "phoneNumber": "123-456-7890",
-  "id": "user-123"
+  "restaurentname": "Doe's Diner",
+  "branchname": "Main Branch",
+  "branchaddress": "123 Main St",
+  "phonenumber": "123-456-7890",
+  "id": "user-123",
+  "country": "USA"
 }
