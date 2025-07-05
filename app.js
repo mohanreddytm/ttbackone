@@ -61,7 +61,7 @@ app.post("/users", async (req, res) => {
             return res.status(400).json({ error: "User with this email already exists" });
         }
         if (!name || !password || !email || !restaurentname || !branchname || !branchaddress || !phonenumber || !id || !country) {
-            return res.status(400).json({ error: "All fields are required" });
+            return res.status(400).json({registration_status: "Already Done", error: "All fields are required" });
         }
         console.log("one");
         const query = `
@@ -77,12 +77,12 @@ app.post("/users", async (req, res) => {
 
         const token = jwt.sign({ userId: result.rows[0].id }, "10");
 
-        res.status(201).json({ user: result.rows[0], token });
+        res.status(201).json({registration_status: "Success" , user: result.rows[0], token });
 
 
     } catch (error) {
         console.error("Error executing query:", error.message);
-        res.status(500).json({ error: "Internal Server Error" });
+        res.status(500).json({registration_status: "Failure", error: "Internal Server Error" });
     }
 });
 
