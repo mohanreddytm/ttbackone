@@ -3,6 +3,8 @@ const cors = require('cors');
 const app = express();
 const port = 8000;
 
+const jwt = require('jsonwebtoken');
+
 const bcrypt = require('bcrypt');
 
 app.use(cors());
@@ -10,15 +12,45 @@ app.use(express.json());
 
 require("dotenv").config();
 
-const databaseUrl = "postgresql://neondb_owner:npg_80neSdmGjoRi@ep-morning-base-a83jvhq1-pooler.eastus2.azure.neon.tech/neondb?sslmode=require&channel_binding=require" ;
+const databaseUrl = process.env.DATABASE_URL;
 
 const {Pool} = require('pg');
 const pool = new Pool({
       connectionString: databaseUrl ,
 });
 
+
+app.post("/login", async (req, res) => {
+    const { email, password } = req.body;
+    try {
+        const query = `
+            SELECT * FROM users WHERE email = $1;
+        `;
+        const result = await pool.query(query, [email]);
+        if (result.rows.length === 0) {
+            return res.status(401).json({ error: "Invalid email or password" });
+        }
+        const user = result.rows[0];
+        const isPasswordValid = await bcrypt.compare(password, user.password);
+        if (!isPasswordValid) {
+            return res.status(401).json({ error: "Invalid email or password" });
+        }
+
+        const token = jwt.sign({ userId: user.id }, "10");
+
+        console.log("User logged in:", user);
+        console.log("Token generated:", token);
+
+
+        res.status(200).json({ message: "Login successful", userId: user.id, token });
+    } catch (error) {
+        console.error("Error executing query:", error.message);
+        res.status(500).json({ error: "Internal Server Error" });
+    }
+});
+
 app.post("/users", async (req, res) => {
-    const {name, password, email, restaurentname, branchname, branchaddress, phonenumber, id, country } = req.body;
+    const {name, password, email, restaurentname, branchname, branchaddress, phonenumber, id, country, countrycode, isadmin, is_email_verified, is_phonenumber_verified } = req.body;
     try {
 
         const existingUserQuery = `
@@ -33,15 +65,21 @@ app.post("/users", async (req, res) => {
         }
         console.log("one");
         const query = `
-            INSERT INTO users (name, password, email, restaurentname, branchname, branchaddress, phonenumber, id, country)
-            VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9)
+            INSERT INTO users (name, password, email, restaurentname, branchname, branchaddress, phonenumber, id, country, countrycode, isadmin, is_email_verified, is_phonenumber_verified)
+            VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11, $12, $13)
             RETURNING *;
         `;
 
         const hashedPassword = await bcrypt.hash(password, 10);
-        const values = [name, hashedPassword, email, restaurentname, branchname, branchaddress, phonenumber, id, country];
+        const values = [name, hashedPassword, email, restaurentname, branchname, branchaddress, phonenumber, id, country, countrycode, isadmin, is_email_verified, is_phonenumber_verified];
         const result = await pool.query(query, values);
-        res.status(201).json(result.rows[0]);
+
+
+        const token = jwt.sign({ userId: result.rows[0].id }, "10");
+
+        res.status(201).json({ user: result.rows[0], token });
+
+
     } catch (error) {
         console.error("Error executing query:", error.message);
         res.status(500).json({ error: "Internal Server Error" });
