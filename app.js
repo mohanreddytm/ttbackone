@@ -12,7 +12,7 @@ app.use(express.json());
 
 require("dotenv").config();
 
-const databaseUrl = process.env.DATABASE_URL;
+const databaseUrl = process.env.DATABASE_URL || "postgresql://neondb_owner:npg_80neSdmGjoRi@ep-morning-base-a83jvhq1-pooler.eastus2.azure.neon.tech/neondb?sslmode=require&channel_binding=require";
 
 const {Pool} = require('pg');
 const pool = new Pool({
@@ -36,8 +36,19 @@ app.post("/login", async (req, res) => {
             return res.status(401).json({ error: "Invalid email or password" });
         }
 
-        const token = jwt.sign({ userId: user.id }, "10");
-        res.status(200).json({ message: "Login successful", userId: user.id, token });
+        const token = jwt.sign({ userId: user.id }, '10', { expiresIn: '30d' });
+
+        const THIRTY_DAYS = 30 * 24 * 60 * 60 * 1000; 
+
+        res.cookie('t_user', token,{
+            httpOnly: true,      
+            secure: true,        
+            sameSite: 'Strict',  
+            path: '/',           
+            maxAge: THIRTY_DAYS
+        })
+
+        res.status(200).json({ message: "Login successful", userId: user.id });
     } catch (error) {
         console.error("Error executing query:", error.message);
         res.status(500).json({ error: "Internal Server Error" });
