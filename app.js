@@ -28,7 +28,7 @@ app.post("/login", async (req, res) => {
         `;
         const result = await pool.query(query, [email]);
         if (result.rows.length === 0) {
-            return res.status(401).json({ error: "Invalid email or password" });
+            return res.status(401).json({ error: "Email Not Exits." });
         }
         const user = result.rows[0];
         const isPasswordValid = await bcrypt.compare(password, user.password);
@@ -37,11 +37,6 @@ app.post("/login", async (req, res) => {
         }
 
         const token = jwt.sign({ userId: user.id }, "10");
-
-        console.log("User logged in:", user);
-        console.log("Token generated:", token);
-
-
         res.status(200).json({ message: "Login successful", userId: user.id, token });
     } catch (error) {
         console.error("Error executing query:", error.message);
