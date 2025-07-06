@@ -1,5 +1,7 @@
 const express = require('express');
 const cors = require('cors');
+const cookieParser = require('cookie-parser');
+
 const app = express();
 const port = 8000;
 
@@ -9,8 +11,26 @@ const bcrypt = require('bcrypt');
 
 app.use(cors());
 app.use(express.json());
+app.use(cookieParser());
 
 require("dotenv").config();
+
+const allowedOrigins = [
+  'http://localhost:3000',
+  'https://ptabletrack.vercel.app'
+];
+
+app.use(cors({
+  origin: function (origin, callback) {
+    if (!origin || allowedOrigins.includes(origin)) {
+      callback(null, true);
+    } else {
+      callback(new Error('Not allowed by CORS'));
+    }
+  },
+  credentials: true
+}));
+
 
 const databaseUrl = process.env.DATABASE_URL || "postgresql://neondb_owner:npg_80neSdmGjoRi@ep-morning-base-a83jvhq1-pooler.eastus2.azure.neon.tech/neondb?sslmode=require&channel_binding=require";
 
@@ -40,13 +60,15 @@ app.post("/login", async (req, res) => {
 
         const THIRTY_DAYS = 30 * 24 * 60 * 60 * 1000; 
 
-        res.cookie('t_user', token,{
-            httpOnly: true,      
-            secure: true,        
-            sameSite: 'Strict',  
-            path: '/',           
-            maxAge: THIRTY_DAYS
-        })
+       const isProduction = process.env.NODE_ENV === 'production';
+
+        res.cookie('t_user', token, {
+        httpOnly: true,
+        secure: isProduction,
+        sameSite: isProduction ? 'None' : 'Lax',
+        path: '/',
+        maxAge: THIRTY_DAYS
+        });
 
         res.status(200).json({ message: "Login successful", userId: user.id });
     } catch (error) {
