@@ -9,7 +9,6 @@ const jwt = require('jsonwebtoken');
 
 const bcrypt = require('bcrypt');
 
-app.use(cors());
 app.use(express.json());
 app.use(cookieParser());
 
