@@ -57,19 +57,7 @@ app.post("/login", async (req, res) => {
 
         const token = jwt.sign({ userId: user.id }, '10', { expiresIn: '30d' });
 
-        const THIRTY_DAYS = 30 * 24 * 60 * 60 * 1000; 
-
-       const isProduction = process.env.NODE_ENV === 'production';
-
-        res.cookie('t_user', token, {
-        httpOnly: true,
-        secure: isProduction,
-        sameSite: isProduction ? 'None' : 'Lax',
-        path: '/',
-        maxAge: THIRTY_DAYS
-        });
-
-        res.status(200).json({ message: "Login successful", userId: user.id });
+        res.status(200).json({ message: "Login successful", userId: user.id, token, user: { name: user.name, email: user.email, isadmin: user.isadmin } });
     } catch (error) {
         console.error("Error executing query:", error.message);
         res.status(500).json({ error: "Internal Server Error" });
