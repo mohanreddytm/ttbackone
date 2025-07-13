@@ -101,8 +101,19 @@ app.post("/users", async (req, res) => {
         const values = [name, hashedPassword, email, restaurentname, branchname, branchaddress, phonenumber, id, country, countrycode, isadmin, is_email_verified, is_phonenumber_verified];
         const result = await pool.query(query, values);
 
+        const token = jwt.sign({ userId: result.rows[0].id }, '10', { expiresIn: '30d' });
+        const THIRTY_DAYS = 30 * 24 * 60 * 60 * 1000; 
 
-        const token = jwt.sign({ userId: result.rows[0].id }, "10");
+       const isProduction = process.env.NODE_ENV === 'production';
+
+        res.cookie('t_user', token, {
+        httpOnly: true,
+        secure: isProduction,
+        sameSite: isProduction ? 'None' : 'Lax',
+        path: '/',
+        maxAge: THIRTY_DAYS
+        });
+
 
         res.status(201).json({registration_status: "Success" , user: result.rows[0], token });
 
