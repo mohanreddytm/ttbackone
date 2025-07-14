@@ -100,6 +100,10 @@ app.post("/users", async (req, res) => {
     }
 });
 
+app.post("/restaurantDetails", async (req, res) => {
+    
+})
+
 app.get("/users", async (req, res) => {
     const url = "select * from users";
     try {
@@ -110,6 +114,11 @@ app.get("/users", async (req, res) => {
         res.status(500).json({ error: "Internal Server Error" });
     }
 });
+
+app.get("/ping", (req, res) => {
+  res.send("pong");
+});
+
 
 app.listen(port, () => {
     console.log(`Server is running on http://localhost:${port}`);
