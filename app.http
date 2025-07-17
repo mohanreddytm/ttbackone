@@ -1,4 +1,4 @@
-GET http://localhost:8000/restaurant
+GET http://localhost:8000/restaurant/4fffa99e-6658-487b-8f82-0cb811e14bdd
 
 ### Request Headers
 POST http://localhost:8000/restaurant

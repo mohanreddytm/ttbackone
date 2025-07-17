@@ -136,6 +136,7 @@ app.post("/restaurant_details/addAreas", async (req, res) => {
 });
 
 
+
 app.post('/restaurant_details/addTable', async (req, res) => {
     const tables = req.body;
     if (!Array.isArray(tables) || tables.length === 0) {
@@ -274,6 +275,17 @@ app.post('/restaurant_details/addMenuItems', async (req, res) => {
     }
 });
 
+app.get("/restaurant/:id", async (req, res) => {
+    try {
+        const id = req.params.id;
+        const query = 'SELECT * FROM restaurant_admin WHERE id = $1';
+        const result = await pool.query(query, [id]);
+        res.json(result.rows); // send the data as JSON
+    } catch (error) {
+        console.error("Got an error:", error);
+        res.status(500).send("Server error");
+    }
+});
 
 
 app.get("/restaurant", async (req, res) => {
