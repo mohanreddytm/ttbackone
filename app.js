@@ -118,10 +118,17 @@ app.post("/restaurant_details/addAreas", async (req, res) => {
         throw new Error("Missing fields in one of the area objects");
       }
 
+    const checkResult = await client.query(
+      "SELECT 1 FROM restaurant_area WHERE id = $1",
+      [area_id]
+    );
+
+    if (checkResult.rowCount === 0) {
       await client.query(
         "INSERT INTO restaurant_area (id, area_name, restaurant_id) VALUES ($1, $2, $3)",
         [area_id, area_name, restaurant_id]
       );
+    }
     }
 
     await client.query("COMMIT");
@@ -154,8 +161,15 @@ app.post('/restaurant_details/addTable', async (req, res) => {
                 return res.status(400).json({ error: "All fields are required" });
             }
 
-            const query = 'INSERT INTO restaurant_tables (id, name, seat_capacity, is_active, restaurant_id, area_id) VALUES ($1, $2, $3, $4, $5, $6);';
-            await client.query(query, [table_id, table_name, table_capacity, table_status, restaurant_id, area_id]);    
+            const checkResult = await client.query(
+                "SELECT 1 FROM restaurant_tables WHERE id = $1",
+                [table_id]
+                );
+
+            if (checkResult.rowCount === 0) {
+                const query = 'INSERT INTO restaurant_tables (id, name, seat_capacity, is_active, restaurant_id, area_id) VALUES ($1, $2, $3, $4, $5, $6);';
+                await client.query(query, [table_id, table_name, table_capacity, table_status, restaurant_id, area_id]);    
+            }
         }
 
         await client.query("COMMIT");
@@ -189,11 +203,18 @@ app.post('/restaurant_details/addMenuCategory', async (req, res) => {
                 throw new Error("Missing fields in one of the category objects");
             }
 
-            const query = `
-                INSERT INTO restaurant_menu_category (id, menu_category_name, restaurant_id)
-                VALUES ($1, $2, $3);
-            `;
-            await client.query(query, [menu_category_id, menu_category_name, restaurant_id]);
+            const checkResult = await client.query(
+                "SELECT 1 FROM restaurant_menu_category WHERE id = $1",
+                [menu_category_id]
+                );
+
+            if (checkResult.rowCount === 0) {
+                const query = `
+                    INSERT INTO restaurant_menu_category (id, menu_category_name, restaurant_id)
+                    VALUES ($1, $2, $3);
+                `;
+                await client.query(query, [menu_category_id, menu_category_name, restaurant_id]);
+            }
         }
 
         await client.query("COMMIT");
@@ -244,23 +265,31 @@ app.post('/restaurant_details/addMenuItems', async (req, res) => {
                 throw new Error("Missing fields in one of the item objects");
             }
 
-            const query = `
-                INSERT INTO restaurant_menu_items
-                (id, item_name, item_category, item_dec, preparation_time, availability, image_url, price, menu_category_id)
-                VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9);
-            `;
+            
+            const checkResult = await client.query(
+                "SELECT 1 FROM restaurant_menu_items WHERE id = $1",
+                [item_id]
+                );
 
-            await client.query(query, [
-                item_id,
-                item_name,
-                item_category,
-                item_dec,
-                item_preparation_time,
-                item_availabiliy,
-                item_url,
-                item_price,
-                item_menu_category_id
-            ]);
+            if (checkResult.rowCount === 0) {
+                const query = `
+                    INSERT INTO restaurant_menu_items
+                    (id, item_name, item_category, item_dec, preparation_time, availability, image_url, price, menu_category_id)
+                    VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9);
+                `;
+
+                await client.query(query, [
+                    item_id,
+                    item_name,
+                    item_category,
+                    item_dec,
+                    item_preparation_time,
+                    item_availabiliy,
+                    item_url,
+                    item_price,
+                    item_menu_category_id
+                ]);
+            }
         }
 
         await client.query("COMMIT");
