@@ -274,8 +274,8 @@ app.post('/restaurant_details/addMenuItems', async (req, res) => {
             if (checkResult.rowCount === 0) {
                 const query = `
                     INSERT INTO restaurant_menu_items
-                    (id, item_name, item_category, item_dec, preparation_time, availability, image_url, price, menu_category_id)
-                    VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9);
+                    (id, item_name, item_category, item_dec, preparation_time, availability, image_url, price, menu_category_id, restaurant_id)
+                    VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10);
                 `;
 
                 await client.query(query, [
@@ -287,7 +287,8 @@ app.post('/restaurant_details/addMenuItems', async (req, res) => {
                     item_availabiliy,
                     item_url,
                     item_price,
-                    item_menu_category_id
+                    item_menu_category_id,
+                    restaurant_id
                 ]);
             }
         }
