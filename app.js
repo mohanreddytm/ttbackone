@@ -238,6 +238,8 @@ app.get('/getMenuItems/:restaurant_id', async (req, res) => {
 });
 
 
+
+
 app.post('/restaurant_details/addMenuItems', async (req, res) => {
     const items = req.body;
 
@@ -255,6 +257,7 @@ app.post('/restaurant_details/addMenuItems', async (req, res) => {
                 item_id,
                 item_name,
                 item_dec,
+                category_name,
                 item_price,
                 item_menu_category_id,
                 item_category,
@@ -265,7 +268,7 @@ app.post('/restaurant_details/addMenuItems', async (req, res) => {
             } = item;
 
             if (
-                !item_id || !item_name || !item_dec || !item_price ||
+                !item_id || !item_name || !item_dec || !category_name || !item_price ||
                 !item_menu_category_id || !item_category || !item_availabiliy ||
                 !item_preparation_time || !restaurant_id
             ) {
@@ -281,14 +284,15 @@ app.post('/restaurant_details/addMenuItems', async (req, res) => {
             if (checkResult.rowCount === 0) {
                 const query = `
                     INSERT INTO restaurant_menu_items
-                    (id, item_name, item_category, item_dec, preparation_time, availability, image_url, price, menu_category_id, restaurant_id)
-                    VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10);
+                    (id, item_name, item_category, category_name, item_dec, preparation_time, availability, image_url, price, menu_category_id, restaurant_id)
+                    VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11);
                 `;
 
                 await client.query(query, [
                     item_id,
                     item_name,
                     item_category,
+                    category_name,
                     item_dec,
                     item_preparation_time,
                     item_availabiliy,
@@ -311,6 +315,22 @@ app.post('/restaurant_details/addMenuItems', async (req, res) => {
         client.release();
     }
 });
+
+app.get('/getTables/:area_id', async (req, res) => {
+    const area_id = req.params.area_id;
+    const query = 'SELECT * FROM restaurant_tables WHERE area_id = $1';
+    const result = await pool.query(query, [area_id]);
+    res.status(200).json(result.rows);
+});
+
+app.get('/getAreas/:restaurant_id', async (req, res) => {
+    const restaurant_id = req.params.restaurant_id;
+    const query = 'SELECT * FROM restaurant_area WHERE restaurant_id = $1';
+    const result = await pool.query(query, [restaurant_id]);
+    res.status(200).json(result.rows);
+});
+
+
 
 app.get("/restaurant/:id", async (req, res) => {
     try {
