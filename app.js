@@ -230,6 +230,13 @@ app.post('/restaurant_details/addMenuCategory', async (req, res) => {
 });
 
 
+app.get('/getMenuItems/:restaurant_id', async (req, res) => {
+    const restaurant_id = req.params.restaurant_id;
+    const query = 'SELECT * FROM restaurant_menu_items WHERE restaurant_id = $1';
+    const result = await pool.query(query, [restaurant_id]);
+    res.status(200).json(result.rows);
+});
+
 
 app.post('/restaurant_details/addMenuItems', async (req, res) => {
     const items = req.body;
