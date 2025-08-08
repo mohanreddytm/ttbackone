@@ -119,8 +119,8 @@ app.post("/restaurant_details/addAreas", async (req, res) => {
       }
 
     const checkResult = await client.query(
-      "SELECT 1 FROM restaurant_area WHERE area_name = $1",
-      [area_name]
+      "SELECT 1 FROM restaurant_area WHERE area_name = $1 AND restaurant_id = $2",
+      [area_name, restaurant_id]
     );
 
     if (checkResult.rowCount === 0) {
@@ -162,9 +162,9 @@ app.post('/restaurant_details/addTable', async (req, res) => {
             }
 
             const checkResult = await client.query(
-                "SELECT 1 FROM restaurant_tables WHERE  table_name= $1",
-                [table_name]
-                );
+                "SELECT 1 FROM restaurant_tables WHERE  table_name= $1 AND restaurant_id = $2",
+                [table_name, restaurant_id]
+            );
 
             if (checkResult.rowCount === 0) {
                 const query = 'INSERT INTO restaurant_tables (id, name, seat_capacity, is_active, restaurant_id, area_id) VALUES ($1, $2, $3, $4, $5, $6);';
@@ -204,8 +204,8 @@ app.post('/restaurant_details/addMenuCategory', async (req, res) => {
             }
 
             const checkResult = await client.query(
-                "SELECT 1 FROM restaurant_menu_category WHERE menu_category_name = $1",
-                [menu_category_name]
+                "SELECT 1 FROM restaurant_menu_category WHERE menu_category_name = $1 and restaurant_id = $2",
+                [menu_category_name, restaurant_id]
             );
 
             if (checkResult.rowCount === 0) {
@@ -316,8 +316,8 @@ app.post('/restaurant_details/addMenuItems', async (req, res) => {
 
             
             const checkResult = await client.query(
-                "SELECT 1 FROM restaurant_menu_items WHERE item_name = $1",
-                [item_name]
+                "SELECT 1 FROM restaurant_menu_items WHERE item_name = $1 AND restaurant_id = $2",
+                [item_name, restaurant_id]
             );
 
             if (checkResult.rowCount === 0) {
