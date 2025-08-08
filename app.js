@@ -204,9 +204,9 @@ app.post('/restaurant_details/addMenuCategory', async (req, res) => {
             }
 
             const checkResult = await client.query(
-                "SELECT 1 FROM restaurant_menu_category WHERE id = $1",
-                [menu_category_id]
-                );
+                "SELECT 1 FROM restaurant_menu_category WHERE menu_category_name = $1",
+                [menu_category_name]
+            );
 
             if (checkResult.rowCount === 0) {
                 const query = `
@@ -237,8 +237,47 @@ app.get('/getMenuItems/:restaurant_id', async (req, res) => {
     res.status(200).json(result.rows);
 });
 
+app.update('/restaurant_details/updateMenuItem', async (req, res) => {
+    const { item_id, item_name, item_dec, category_name, item_price, item_menu_category_id, item_category, item_url, item_availabiliy, item_preparation_time, restaurant_id } = req.body;
+    if (!item_id || !item_name || !item_dec || !category_name || !item_price || !item_menu_category_id || !item_category || !item_availabiliy || !item_preparation_time || !restaurant_id) {
+        return res.status(400).json({ error: "All fields are required" });
+    }
 
+    const client = await pool.connect();
 
+    try {
+        await client.query("BEGIN");
+
+        const query = `
+            UPDATE restaurant_menu_items
+            SET item_name = $1, item_dec = $2, category_name = $3, item_price = $4, item_menu_category_id = $5, item_category = $6, image_url = $7, availabiliy = $8, preparation_time = $9
+            WHERE id = $10 AND restaurant_id = $11
+        `;
+        await client.query(query, [
+            item_name,
+            item_dec,
+            category_name,
+            item_price,
+            item_menu_category_id,
+            item_category,
+            item_url,
+            item_availabiliy,
+            item_preparation_time,
+            item_id,
+            restaurant_id
+        ]);
+
+        await client.query("COMMIT");
+        res.status(200).json({ message: "Menu item updated successfully" });
+
+    } catch (error) {
+        await client.query("ROLLBACK");
+        console.error("Error updating menu item:", error.message);
+        res.status(500).json({ error: "Internal Server Error" });
+    } finally {
+        client.release();
+    }
+});
 
 app.post('/restaurant_details/addMenuItems', async (req, res) => {
     const items = req.body;
