@@ -119,8 +119,8 @@ app.post("/restaurant_details/addAreas", async (req, res) => {
       }
 
     const checkResult = await client.query(
-      "SELECT 1 FROM restaurant_area WHERE id = $1",
-      [area_id]
+      "SELECT 1 FROM restaurant_area WHERE area_name = $1",
+      [area_name]
     );
 
     if (checkResult.rowCount === 0) {
@@ -162,8 +162,8 @@ app.post('/restaurant_details/addTable', async (req, res) => {
             }
 
             const checkResult = await client.query(
-                "SELECT 1 FROM restaurant_tables WHERE id = $1",
-                [table_id]
+                "SELECT 1 FROM restaurant_tables WHERE  table_name= $1",
+                [table_name]
                 );
 
             if (checkResult.rowCount === 0) {
@@ -316,9 +316,9 @@ app.post('/restaurant_details/addMenuItems', async (req, res) => {
 
             
             const checkResult = await client.query(
-                "SELECT 1 FROM restaurant_menu_items WHERE id = $1",
-                [item_id]
-                );
+                "SELECT 1 FROM restaurant_menu_items WHERE item_name = $1",
+                [item_name]
+            );
 
             if (checkResult.rowCount === 0) {
                 const query = `

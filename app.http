@@ -1,0 +1,8 @@
+POST http://localhost:8000/restaurant_details/addMenuCategory
+Content-Type: application/json
+
+[{
+    "menu_category_id": "1",
+    "menu_category_name": "Appetizers",
+    "restaurant_id": "e40bf652-048e-4191-92ed-20c7d8773211"
+}]
