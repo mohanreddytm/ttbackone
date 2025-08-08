@@ -237,7 +237,7 @@ app.get('/getMenuItems/:restaurant_id', async (req, res) => {
     res.status(200).json(result.rows);
 });
 
-app.update('/restaurant_details/updateMenuItem', async (req, res) => {
+app.put('/restaurant_details/updateMenuItem', async (req, res) => {
     const { item_id, item_name, item_dec, category_name, item_price, item_menu_category_id, item_category, item_url, item_availabiliy, item_preparation_time, restaurant_id } = req.body;
     if (!item_id || !item_name || !item_dec || !category_name || !item_price || !item_menu_category_id || !item_category || !item_availabiliy || !item_preparation_time || !restaurant_id) {
         return res.status(400).json({ error: "All fields are required" });
