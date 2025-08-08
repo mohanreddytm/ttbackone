@@ -279,6 +279,14 @@ app.put('/restaurant_details/updateMenuItem', async (req, res) => {
     }
 });
 
+app.get('/restaurant_details/getMenuCategory/:restaurant_id', async (req, res) => {
+    const restaurant_id = req.params.restaurant_id;
+
+    const query = 'SELECT * FROM restaurant_menu_category WHERE restaurant_id = $1';
+    const result = await pool.query(query, [restaurant_id]);
+    res.status(200).json(result.rows);
+});
+
 app.post('/restaurant_details/addMenuItems', async (req, res) => {
     const items = req.body;
 
