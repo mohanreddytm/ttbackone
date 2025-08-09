@@ -237,6 +237,9 @@ app.get('/getMenuItems/:restaurant_id', async (req, res) => {
     res.status(200).json(result.rows);
 });
 
+
+
+
 app.delete('/deleteMenuItem/:item_id/:restaurant_id', async (req , res) => {
     const {item_id, restaurant_id} = req.params;
     if(!item_id || !restaurant_id){
@@ -259,7 +262,7 @@ app.put('/restaurant_details/updateMenuItem', async (req, res) => {
 
     const client = await pool.connect();
 
-    try {
+    try {   
         await client.query("BEGIN");
 
         const query = `
@@ -296,7 +299,7 @@ app.put('/restaurant_details/updateMenuItem', async (req, res) => {
 app.get('/restaurant_details/getMenuCategory/:restaurant_id', async (req, res) => {
     const restaurant_id = req.params.restaurant_id;
 
-    const query = 'SELECT * FROM restaurant_menu_category WHERE restaurant_id = $1';
+    const query = "SELECT c.id, c.menu_category_name, COUNT(i.menu_category_id) AS item_count FROM restaurant_menu_category c LEFT JOIN restaurant_menu_items i ON c.id = i.menu_category_id WHERE c.restaurant_id=$1 GROUP BY c.menu_category_name, c.id;";
     const result = await pool.query(query, [restaurant_id]);
     res.status(200).json(result.rows);
 });

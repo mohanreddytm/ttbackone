@@ -17,4 +17,4 @@ Content-Type: application/json
 
 ###
 
-DELETE https://localhost:8000/deleteMenuItem/ce0205e7-1b5f-43b0-8cb7-bfdc8300ce42/e40bf652-048e-4191-92ed-20c7d8773211
+DELETE http://localhost:8000/restaurant_details/getMenuCategory/:restaurant_id/e40bf652-048e-4191-92ed-20c7d8773211
