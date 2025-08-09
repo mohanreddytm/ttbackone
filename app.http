@@ -1,8 +1,20 @@
-POST http://localhost:8000/restaurant_details/addMenuCategory
+PUT http://localhost:8000/restaurant_details/updateMenuItem
 Content-Type: application/json
 
-[{
-    "menu_category_id": "1",
-    "menu_category_name": "Appetizers",
-    "restaurant_id": "e40bf652-048e-4191-92ed-20c7d8773211"
-}]
+{
+    "item_availabiliy": "No",
+    "category_name": "Desserts",
+    "item_id": "b5bb9dd8-46ce-4bca-a465-9cc7d0359f8a",
+    "restaurant_id": "e40bf652-048e-4191-92ed-20c7d8773211",
+    "item_url": "https://res.cloudinary.com/dbrwqjsl3/image/upload/v1754646473/pwc9mymtuulmajyzwpx7.jpg",
+    "item_category": "Daily-Free",
+    "item_dec":"Now Update with the api checking",
+    "item_name": "Pancake",
+    "item_menu_category_id": "179e096e-4bc2-4685-8a75-37029e16428a",
+    "item_preparation_time": "10",
+    "item_price":"2000"
+}
+
+###
+
+DELETE https://localhost:8000/deleteMenuItem/ce0205e7-1b5f-43b0-8cb7-bfdc8300ce42/e40bf652-048e-4191-92ed-20c7d8773211

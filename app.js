@@ -237,6 +237,20 @@ app.get('/getMenuItems/:restaurant_id', async (req, res) => {
     res.status(200).json(result.rows);
 });
 
+app.delete('/deleteMenuItem/:item_id/:restaurant_id', async (req , res) => {
+    const {item_id, restaurant_id} = req.params;
+    if(!item_id || !restaurant_id){
+        return res.status(400).json({error: "All feilds are required"});
+    }
+
+    try{
+        await pool.query("delete from restaurant_menu_items where id = $1 and restaurant_id = $2;", [item_id, restaurant_id]);
+        res.status(200).send("Succesfully Deleted the Item")
+    }catch{
+        res.status(500).json({ error: "Internal Server Error" });
+    }
+})
+
 app.put('/restaurant_details/updateMenuItem', async (req, res) => {
     const { item_id, item_name, item_dec, category_name, item_price, item_menu_category_id, item_category, item_url, item_availabiliy, item_preparation_time, restaurant_id } = req.body;
     if (!item_id || !item_name || !item_dec || !category_name || !item_price || !item_menu_category_id || !item_category || !item_availabiliy || !item_preparation_time || !restaurant_id) {
@@ -250,7 +264,7 @@ app.put('/restaurant_details/updateMenuItem', async (req, res) => {
 
         const query = `
             UPDATE restaurant_menu_items
-            SET item_name = $1, item_dec = $2, category_name = $3, item_price = $4, item_menu_category_id = $5, item_category = $6, image_url = $7, availabiliy = $8, preparation_time = $9
+            SET item_name = $1, item_dec = $2, category_name = $3, price = $4, menu_category_id = $5, item_category = $6, image_url = $7, availability = $8, preparation_time = $9
             WHERE id = $10 AND restaurant_id = $11
         `;
         await client.query(query, [
