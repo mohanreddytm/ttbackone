@@ -1,20 +1,9 @@
-PUT http://localhost:8000/restaurant_details/updateMenuItem
+###
+
+PUT http://localhost:8000/restaurant_details/updateMenuCategoryName
 Content-Type: application/json
 
 {
-    "item_availabiliy": "No",
-    "category_name": "Desserts",
-    "item_id": "b5bb9dd8-46ce-4bca-a465-9cc7d0359f8a",
-    "restaurant_id": "e40bf652-048e-4191-92ed-20c7d8773211",
-    "item_url": "https://res.cloudinary.com/dbrwqjsl3/image/upload/v1754646473/pwc9mymtuulmajyzwpx7.jpg",
-    "item_category": "Daily-Free",
-    "item_dec":"Now Update with the api checking",
-    "item_name": "Pancake",
-    "item_menu_category_id": "179e096e-4bc2-4685-8a75-37029e16428a",
-    "item_preparation_time": "10",
-    "item_price":"2000"
-}
-
-###
-
-DELETE http://localhost:8000/restaurant_details/getMenuCategory/:restaurant_id/e40bf652-048e-4191-92ed-20c7d8773211
+    "menu_category_name" : "Thor",
+    "id": "ad424d61-a33e-4bb5-8311-a35e6dfa29ed"
+    }

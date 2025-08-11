@@ -184,6 +184,41 @@ app.post('/restaurant_details/addTable', async (req, res) => {
 
 });
 
+app.delete('/deleteMenuCategoryCompletly/:category_id', async (req , res) => {
+    const {category_id} = req.params;
+    if(!category_id){
+        res.status(400).json({error: "Category id is not present"})
+    }
+
+    try{
+        const data = await pool.query("select * from restaurant_menu_items where menu_category_id = $1", [category_id]);
+        if(data.rows.length > 0){
+            await pool.query("delete from restaurant_menu_items where menu_category_id = $1", [category_id]);
+        }
+        await pool.query("delete from restaurant_menu_category where id=$1", [category_id]);
+        res.status(200).send("deleted succesfuulyy");
+    }catch(e){
+        res.status(500).json({ error: "Internal Server Error" });
+    }
+})
+
+app.put('/restaurant_details/updateMenuCategoryName', async(req,res) => {
+    const details = req.body;
+    const {menu_category_name, id} = details;
+    if(!menu_category_name || !id){
+        return res.status(400).json({message: "require field are not filled"});
+    }
+    try{
+        const query = "UPDATE restaurant_menu_category SET menu_category_name = $1 WHERE id = $2;";
+        await pool.query(query, [menu_category_name, id]);
+
+        res.status(200).send("Done");
+    }
+    catch{
+        res.status(500).json({ error: "Internal Server Error" });
+    }
+})
+
 app.post('/restaurant_details/addMenuCategory', async (req, res) => {
     const categories = req.body;
 
