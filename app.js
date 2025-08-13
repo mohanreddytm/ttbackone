@@ -210,7 +210,7 @@ app.put('/restaurant_details/updateMenuCategoryName', async(req,res) => {
     }
     try{
         const checkResult = await pool.query("SELECT 1 FROM restaurant_menu_items WHERE menu_category_id = $1", [id]);
-        if (checkResult.rowCount === 0) {
+        if (checkResult.rowCount > 0) {
             await pool.query("UPDATE restaurant_menu_items SET category_name = $1 WHERE menu_category_id = $2", [menu_category_name, id]);
         }
         const query = "UPDATE restaurant_menu_category SET menu_category_name = $1 WHERE id = $2;";
