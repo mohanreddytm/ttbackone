@@ -162,7 +162,7 @@ app.post('/restaurant_details/addTable', async (req, res) => {
             }
 
             const checkResult = await client.query(
-                "SELECT 1 FROM restaurant_tables WHERE  table_name= $1 AND restaurant_id = $2",
+                "SELECT 1 FROM restaurant_tables WHERE name= $1 AND restaurant_id = $2",
                 [table_name, restaurant_id]
             );
 
