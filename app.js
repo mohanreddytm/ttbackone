@@ -142,6 +142,61 @@ app.post("/restaurant_details/addAreas", async (req, res) => {
   }
 });
 
+app.put('/restaurant_details/updateTable/', async (req, res) => {
+    const { table_id, table_name, table_capacity, table_status, restaurant_id, area_id } = req.body;
+
+    if (!table_id || !table_name || !table_capacity || !table_status || !restaurant_id || !area_id) {
+        return res.status(400).json({ error: "All fields are required" });
+    }
+
+    try {
+        const query = `
+            UPDATE restaurant_tables
+            SET name = $1, seat_capacity = $2, is_active = $3, area_id = $4
+            WHERE id = $5 AND restaurant_id = $6;
+        `;
+        await pool.query(query, [table_name, table_capacity, table_status, area_id, table_id, restaurant_id]);
+        res.status(200).json({ message: "Table updated successfully"});
+    } catch (error) {
+        console.error("Error updating table:", error.message);
+        res.status(500).json({ error: "Internal Server Error" });
+    }
+});
+
+
+app.delete('/deleteTable/:table_id/:restaurant_id', async (req, res) => {
+    const { table_id, restaurant_id } = req.params;
+    
+    try {
+        const checkResult = await pool.query(
+            "SELECT * FROM restaurant_tables WHERE id = $1 AND restaurant_id = $2",
+            [table_id, restaurant_id]
+        );
+
+        if (checkResult.rows.length === 0) {
+            return res.status(404).json({ error: "Table not found" });
+        }
+
+        await pool.query(
+            "DELETE FROM restaurant_tables WHERE id = $1 AND restaurant_id = $2",
+            [table_id, restaurant_id]
+        );
+
+        res.status(200).json({ 
+            success: true,
+            message: "Successfully deleted the table",
+            deletedTableId: table_id
+        });
+        
+    } catch (error) {
+        console.error("Error deleting table:", error.message);
+        res.status(500).json({ 
+            success: false,
+            error: "Internal Server Error",
+            details: error.message
+        });
+    }
+});
 
 
 app.post('/restaurant_details/addTable', async (req, res) => {
