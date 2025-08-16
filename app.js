@@ -142,6 +142,63 @@ app.post("/restaurant_details/addAreas", async (req, res) => {
   }
 });
 
+
+app.put('/restaurant_details/updateArea', async (req, res) => {
+    const { area_id, area_name, restaurant_id } = req.body;
+
+    if (!area_id || !area_name || !restaurant_id) {
+        return res.status(400).json({ error: "All fields are required" });
+    }
+
+    try {
+        const query = `
+            UPDATE restaurant_area
+            SET area_name = $1
+            WHERE id = $2 AND restaurant_id = $3;
+        `;
+        await pool.query(query, [area_name, area_id, restaurant_id]);
+        res.status(200).json({ message: "Area updated successfully" });
+    } catch (error) {
+        console.error("Error updating area:", error.message);
+        res.status(500).json({ error: "Internal Server Error" });
+    }
+});
+
+
+app.delete('/deleteArea/:area_id/:restaurant_id', async (req, res) => {
+    const { area_id, restaurant_id } = req.params;
+
+    try {
+        const checkResult = await pool.query(
+            "SELECT 1 FROM restaurant_tables WHERE area_id = $1 AND restaurant_id = $2",
+            [area_id, restaurant_id]
+        );
+
+        if (checkResult.rows.length > 0) {
+            await pool.query("DELETE FROM restaurant_tables WHERE area_id = $1 AND restaurant_id = $2", [area_id, restaurant_id]);
+        }
+
+        await pool.query(
+            "DELETE FROM restaurant_area WHERE id = $1 AND restaurant_id = $2",
+            [area_id, restaurant_id]
+        );
+
+        res.status(200).json({
+            success: true,
+            message: "Successfully deleted the area",
+            deletedAreaId: area_id
+        });
+
+    } catch (error) {
+        console.error("Error deleting area:", error.message);
+        res.status(500).json({
+            success: false,
+            error: "Internal Server Error",
+            details: error.message
+        });
+    }
+});
+
 app.put('/restaurant_details/updateTable/', async (req, res) => {
     const { table_id, table_name, table_capacity, table_status, restaurant_id, area_id } = req.body;
 
