@@ -16,7 +16,8 @@ require("dotenv").config();
 
 const allowedOrigins = [
   'http://localhost:3000',
-  'https://ptabletrack.vercel.app'
+  'https://ptabletrack.vercel.app',
+  'http://10.111.204.89:3000/'
 ];
 
 app.use(cors({
@@ -142,6 +143,107 @@ app.post("/restaurant_details/addAreas", async (req, res) => {
   }
 });
 
+app.get('/restaurant_details/getStaff/:restaurant_id', async (req, res) => {
+    const { restaurant_id } = req.params;
+
+    if (!restaurant_id) {
+        return res.status(400).json({ error: "Restaurant ID is required" });
+    }
+
+    try {
+        const query = `
+            SELECT * FROM restaurant_staff
+            WHERE restaurant_id = $1;
+        `;
+        const result = await pool.query(query, [restaurant_id]);
+        res.status(200).json({ staff: result.rows });
+    } catch (error) {
+        console.error("Error fetching staff:", error.message);
+        res.status(500).json({ error: "Internal Server Error" });
+    }
+});
+
+app.delete('/restaurant_details/deleteStaff/:staff_id/:restaurant_id', async (req, res) => {
+    const { staff_id, restaurant_id } = req.params;
+
+    if (!staff_id || !restaurant_id) {
+        return res.status(400).json({ error: "Staff ID and Restaurant ID are required" });
+    }
+
+    try {
+        const query = `
+            DELETE FROM restaurant_staff
+            WHERE id = $1 AND restaurant_id = $2;
+        `;
+        await pool.query(query, [staff_id, restaurant_id]);
+        res.status(200).json({ message: "Staff deleted successfully." });
+    } catch (error) {
+        console.error("Error deleting staff:", error.message);
+        res.status(500).json({ error: "Internal Server Error" });
+    }
+});
+
+app.post('/restaurant_details/addRole', async (req, res) => {
+    const { role_id, role_name, restaurant_id } = req.body;
+
+    if (!role_id || !role_name || !restaurant_id) {
+        return res.status(400).json({ error: "All fields are required" });
+    }
+
+    try {
+        const query = `
+            INSERT INTO restaurant_roles (id, role_name, restaurant_id)
+            VALUES ($1, $2, $3);
+        `;
+        await pool.query(query, [role_id, role_name, restaurant_id]);
+        res.status(201).json({ message: "Role added successfully" });
+    } catch (error) {
+        console.error("Error adding role:", error.message);
+        res.status(500).json({ error: "Internal Server Error" });
+    }
+});
+
+app.put('/restaurant_details/updateStaff', async (req, res) => {
+    const { staff_id, staff_name, restaurant_id, staff_email,
+        staff_phone, staff_salary, staff_shift_timing, staff_status, staff_address, staff_role, staff_image, staff_experience, staff_ratings, waiter_total_orders_served, waiter_assigned_tables} = req.body;
+
+    if (!staff_id || !staff_name || !restaurant_id || !staff_email || !staff_phone || !staff_shift_timing || !staff_status || !staff_address || !staff_role) {
+        return res.status(400).json({ error: "All fields are required" });
+    }
+
+    try {
+        const query = `
+            UPDATE restaurant_staff
+            SET name = $1, email = $2, phone_number = $3, experience = $4, total_orders_served = $5, ratings = $6, salary = $7, shift_timing = $8, assigned_tables = $9, status = $10, address = $11, role = $12, staff_image = $13
+            WHERE id = $14 AND restaurant_id = $15;
+        `;
+        await pool.query(query, [staff_name, staff_email, staff_phone, staff_experience, waiter_total_orders_served, staff_ratings, staff_salary, staff_shift_timing, waiter_assigned_tables, staff_status, staff_address, staff_role, staff_image, staff_id, restaurant_id]);
+        res.status(200).json({ message: "Staff updated successfully." });
+    } catch (error) {
+        console.error("Error updating staff:", error.message);
+        res.status(500).json({ error: "Internal Server Error" });
+    }
+});
+
+app.post('/restaurant_details/addStaff', async(req, res) => {
+    const { staff_id, staff_name, restaurant_id, staff_email, staff_phone, staff_salary, staff_shift_timing, staff_status, staff_address, staff_role, staff_image } = req.body;
+
+    if (!staff_id || !staff_name || !restaurant_id || !staff_email || !staff_phone || !staff_salary || !staff_shift_timing || !staff_status || !staff_address || !staff_role) {
+        return res.status(400).json({ error: "All fields are required" });
+    }
+
+    try {
+        const query = `
+            INSERT INTO restaurant_staff (id, name, restaurant_id, email, phone_number, salary, shift_timing, status, address, role, staff_image)
+            VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11);
+        `;
+        await pool.query(query, [staff_id, staff_name, restaurant_id, staff_email, staff_phone, staff_salary, staff_shift_timing, staff_status, staff_address, staff_role, staff_image]);
+        res.status(201).json({ message: "Staff added successfully" });
+    } catch (error) {
+        console.error("Error adding staff:", error.message);
+        res.status(500).json({ error: "Internal Server Error" });
+    }
+});
 
 app.put('/restaurant_details/updateArea', async (req, res) => {
     const { area_id, area_name, restaurant_id } = req.body;
