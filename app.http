@@ -15,3 +15,8 @@ Content-Type: application/json
     "staff_shift_timing": "9 AM - 5 PM",
     "staff_status": "active"
 }
+
+
+###
+
+GET http://localhost:8000/getTableName/1bd83c29-46a7-4cbf-8e6e-81f78bcf1c65/

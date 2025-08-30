@@ -633,6 +633,16 @@ app.post('/restaurant_details/addMenuItems', async (req, res) => {
     }
 });
 
+app.get('/getTableName/:table_id', async (req, res) => {
+    const table_id = req.params.table_id;
+    try{
+        const result = await pool.query("SELECT * from restaurant_tables where id = $1", [table_id]);
+        res.status(200).json(result.rows);
+    }catch(e){
+        res.status(401).send("Something went Wrong")
+    }
+})
+
 app.get('/getTables/:area_id', async (req, res) => {
     const area_id = req.params.area_id;
     const query = 'SELECT * FROM restaurant_tables WHERE area_id = $1';
