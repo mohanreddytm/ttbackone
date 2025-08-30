@@ -17,7 +17,7 @@ require("dotenv").config();
 const allowedOrigins = [
   'http://localhost:3000',
   'https://ptabletrack.vercel.app',
-  'http://10.111.204.89:3000'
+  'http://10.36.84.89:3000'
 ];
 
 app.use(cors({
