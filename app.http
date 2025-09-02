@@ -1,19 +1,14 @@
 ###
 
-POST http://localhost:8000/restaurant_details/addStaff
+POST http://localhost:8000/addCustomer
 Content-Type: application/json
 
 {
-    "staff_name": "John Doe",
-    "staff_id": "ad424d61-a33e-4bb5-8311-a35e6dfa29ed",
-    "staff_role": "Chef",
-    "restaurant_id": "e40bf652-048e-4191-92ed-20c7d8773211",
-    "staff_email": "john.doe@example.com",
-    "staff_phone": "+1234567890",
-    "staff_address": "123 Main St, Anytown, USA",
-    "staff_salary": 50000,
-    "staff_shift_timing": "9 AM - 5 PM",
-    "staff_status": "active"
+    "id":"1",
+    "name":"Mohan",
+    "email": "mohancustomer1@gmail.com",
+    "phone": "90000010",
+    "password": "36167878"
 }
 
 

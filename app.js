@@ -101,6 +101,58 @@ app.post("/restaurant", async (req, res) => {
     }
 });
 
+app.post('/addCustomer', async (req, res) => {
+    const { id, name, email, phone, password } = req.body;
+    try{
+        const existingUserQuery = `
+            SELECT * FROM customer_details WHERE email = $1;
+        `;
+        const existingUserResult = await pool.query(existingUserQuery, [email]);
+        if (existingUserResult.rows.length > 0) {
+            return res.status(400).json({ error: "Customer with this email already exists" });
+        }
+        if (!id || !name || !email || !phone || !password) {
+            return res.status(400).json({ error: "All fields are required" });
+        }
+        const hashedPassword = await bcrypt.hash(password, 10);
+        const values = [id, name, email, phone, hashedPassword];
+        const query = `
+            INSERT INTO customer_details (id, name, email, phone, password) VALUES ($1, $2, $3, $4, $5);
+        `;
+        await pool.query(query, values);
+        res.status(201).json({ message: "Customer added successfully" });
+    } catch (error) {
+        console.error("Error executing query:", error.message);
+        res.status(500).json({ error: "Internal Server Error" });
+    }
+});
+
+app.post('/loginCustomer', async (req, res) => {
+    const { email, password } = req.body;
+    try{
+        const existingUserQuery = `
+            SELECT * FROM customer_details WHERE email = $1;
+        `;
+        const existingUserResult = await pool.query(existingUserQuery, [email]);
+        if (existingUserResult.rows.length === 0) {
+            return res.status(401).json({ error: "Email Not Exits." });
+        }
+        const user = existingUserResult.rows[0];
+        const isPasswordValid = await bcrypt.compare(password, user.password);
+        if (!isPasswordValid) {
+            return res.status(401).json({ error: "Invalid email or password" });
+        }
+        const token = jwt.sign({ userId: user.id }, '10', { expiresIn: '30d' });
+        res.status(200).json({ message: "Login successful", userId: user.id, token, user: { name: user.name, email: user.email} });
+    } catch (error) {
+        console.error("Error executing query:", error.message);
+        res.status(500).json({ error: "Internal Server Error" });
+    }
+    }
+);
+
+
+
 
 app.post("/restaurant_details/addAreas", async (req, res) => {
   const areas = req.body;
