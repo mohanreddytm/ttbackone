@@ -152,15 +152,15 @@ app.post('/loginCustomer', async (req, res) => {
 );
 
 app.post('/addNewOrder', async (req, res) => {
-    const { id, customer_id, table_id, restaurant_id, customer_name, items, total_price, status } = req.body;
+    const { id, customer_id, table_id, restaurant_id, customer_name, items, total_price, status, waiter_id, order_status } = req.body;
     try{
-        if (!id || !table_id || !restaurant_id || !items || !total_price || !status) {
+        if (!id || !table_id || !restaurant_id || !items || !total_price || !status || !order_status) {
             return res.status(400).json({ error: "All fields are required" });
         }
         const query = `
-            INSERT INTO orders (id, customer_id, table_id, restaurant_id, customer_name, items, total_price, status) VALUES ($1, $2, $3, $4, $5, $6, $7, $8);
+            INSERT INTO orders (id, customer_id, table_id, restaurant_id, customer_name, items, total_price, status, waiter_id, order_status) VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10);
         `;
-        await pool.query(query, [id, customer_id, table_id, restaurant_id, customer_name, items, total_price, status]);
+        await pool.query(query, [id, customer_id, table_id, restaurant_id, customer_name, items, total_price, status, waiter_id, order_status]);
         res.status(201).json({ message: "Order added successfully" });
     } catch (error) {
         console.error("Error executing query:", error.message);
@@ -169,7 +169,7 @@ app.post('/addNewOrder', async (req, res) => {
     }
 );
 
-app.get('/getOrder/:restaurant_id', async (req, res) => {
+app.get('/getOrderRestaurant/:restaurant_id', async (req, res) => {
     const { restaurant_id } = req.params;
     try{
         const query = `
@@ -184,8 +184,23 @@ app.get('/getOrder/:restaurant_id', async (req, res) => {
     }
 );
 
+app.get('/waiterDetailsRestaurant/:waiter_id', async (req, res) => {
+    const { waiter_id } = req.params;
+    try{
+        const query = `
+            SELECT * FROM restaurant_staff WHERE id = $1;
+        `;
+        const result = await pool.query(query, [waiter_id]);
+        res.status(200).json({ waiter: result.rows });
+    } catch (error) {
+        console.error("Error executing query:", error.message);
+        res.status(500).json({ error: "Internal Server Error" });
+    }
+    }
+);
 
-app.get('/getOrder/:customer_id', async (req, res) => {
+
+app.get('/getOrderCustomer/:customer_id', async (req, res) => {
     const { customer_id } = req.params;
     try{
         const query = `
