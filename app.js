@@ -151,6 +151,54 @@ app.post('/loginCustomer', async (req, res) => {
     }
 );
 
+app.post('/addNewOrder', async (req, res) => {
+    const { id, customer_id, table_id, restaurant_id, customer_name, items, total_price, status } = req.body;
+    try{
+        if (!id || !table_id || !restaurant_id || !items || !total_price || !status) {
+            return res.status(400).json({ error: "All fields are required" });
+        }
+        const query = `
+            INSERT INTO orders (id, customer_id, table_id, restaurant_id, customer_name, items, total_price, status) VALUES ($1, $2, $3, $4, $5, $6, $7, $8);
+        `;
+        await pool.query(query, [id, customer_id, table_id, restaurant_id, customer_name, items, total_price, status]);
+        res.status(201).json({ message: "Order added successfully" });
+    } catch (error) {
+        console.error("Error executing query:", error.message);
+        res.status(500).json({ error: "Internal Server Error" });
+    }
+    }
+);
+
+app.get('/getOrder/:restaurant_id', async (req, res) => {
+    const { restaurant_id } = req.params;
+    try{
+        const query = `
+            SELECT * FROM orders WHERE restaurant_id = $1;
+        `;
+        const result = await pool.query(query, [restaurant_id]);
+        res.status(200).json({ order: result.rows });
+    } catch (error) {
+        console.error("Error executing query:", error.message);
+        res.status(500).json({ error: "Internal Server Error" });
+    }
+    }
+);
+
+
+app.get('/getOrder/:customer_id', async (req, res) => {
+    const { customer_id } = req.params;
+    try{
+        const query = `
+            SELECT * FROM orders WHERE customer_id = $1;
+        `;
+        const result = await pool.query(query, [customer_id]);
+        res.status(200).json({ order: result.rows });
+    } catch (error) {
+        console.error("Error executing query:", error.message);
+        res.status(500).json({ error: "Internal Server Error" });
+    }
+    }
+);
 
 
 

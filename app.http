@@ -1,14 +1,15 @@
 ###
 
-POST http://localhost:8000/addCustomer
+POST http://localhost:8000/addNewOrder
 Content-Type: application/json
 
 {
-    "id":"1",
-    "name":"Mohan",
-    "email": "mohancustomer1@gmail.com",
-    "phone": "90000010",
-    "password": "36167878"
+    "id":"one",
+    "table_id": "3d25eac9-e3d8-4d07-8b9e-3aefa9388eb5",
+    "restaurant_id": "e40bf652-048e-4191-92ed-20c7d8773211",
+    "status":"Pending",
+    "total_price": "2000",
+    "items": "[]"
 }
 
 
