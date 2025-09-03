@@ -152,15 +152,15 @@ app.post('/loginCustomer', async (req, res) => {
 );
 
 app.post('/addNewOrder', async (req, res) => {
-    const { id, customer_id, table_id, restaurant_id, customer_name, items, total_price, status, waiter_id, order_status } = req.body;
+    const { id, customer_id, table_id, restaurant_id, customer_name, items, total_price, status, waiter_id, order_status, table_name } = req.body;
     try{
-        if (!id || !table_id || !restaurant_id || !items || !total_price || !status || !order_status) {
+        if (!id || !table_id || !restaurant_id || !items || !total_price || !status || !order_status || !table_name) {
             return res.status(400).json({ error: "All fields are required" });
         }
         const query = `
-            INSERT INTO orders (id, customer_id, table_id, restaurant_id, customer_name, items, total_price, status, waiter_id, order_status) VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10);
+            INSERT INTO orders (id, customer_id, table_id, restaurant_id, customer_name, items, total_price, status, waiter_id, order_status, table_name) VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11);
         `;
-        await pool.query(query, [id, customer_id, table_id, restaurant_id, customer_name, items, total_price, status, waiter_id, order_status]);
+        await pool.query(query, [id, customer_id, table_id, restaurant_id, customer_name, items, total_price, status, waiter_id, order_status, table_name]);
         res.status(201).json({ message: "Order added successfully" });
     } catch (error) {
         console.error("Error executing query:", error.message);
